@@ -3,19 +3,23 @@ import { useNavigate, useLocation } from "react-router-dom";
 import questionsData from "../awsquestion.js";
 
 function Practitionner() {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // ✅ Récupérer les questions envoyées depuis l'accueil (ou toutes par défaut)
-  const questions = location.state?.questions || questionsData;
+  // Récupère les questions reçues via navigation ou génère 25 questions aléatoires
+  const initialQuestions =
+    location.state?.questions && location.state.questions.length > 0
+      ? location.state.questions
+      : [...questionsData].sort(() => Math.random() - 0.5).slice(0, 25);
 
+  const [questions] = useState(initialQuestions);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [flaggedQuestions, setFlaggedQuestions] = useState({});
   const [timeLeft, setTimeLeft] = useState(120);
   const [timeUp, setTimeUp] = useState(false);
 
-  // ⏳ Timer
+  // Timer
   useEffect(() => {
     if (timeLeft <= 0) {
       handleSubmit(true);
@@ -26,17 +30,16 @@ function Practitionner() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // ✅ Vérifier la réponse correcte
+  // Vérifie si la réponse est correcte
   const isAnswerCorrect = (question, userAnswers) => {
     const correct = question.correctAnswers.map((id) => question.options[id]).sort().toString();
     const user = [...(userAnswers || [])].sort().toString();
     return correct === user;
   };
 
-  // ✅ Soumettre et calculer le score
+  // Soumettre et calculer le score
   const handleSubmit = (timeExpired = false) => {
     let totalCorrect = 0;
-
     questions.forEach((q, i) => {
       if (isAnswerCorrect(q, selectedAnswers[i])) {
         totalCorrect++;
@@ -54,7 +57,7 @@ function Practitionner() {
     });
   };
 
-  // ✅ Gestion du choix de réponse
+  // Gérer le changement de réponse
   const handleAnswerChange = (answer) => {
     const current = selectedAnswers[currentIndex] || [];
     if (current.includes(answer)) {
@@ -70,7 +73,7 @@ function Practitionner() {
     }
   };
 
-  // ✅ Flag
+  // Flaguer / déflaguer question
   const toggleFlag = () => {
     setFlaggedQuestions((prev) => ({
       ...prev,
@@ -78,7 +81,7 @@ function Practitionner() {
     }));
   };
 
-  // ✅ Timer Visuel
+  // Timer visuel
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const totalTime = 120;
@@ -88,13 +91,13 @@ function Practitionner() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 relative">
-      {/* ✅ Grille des questions */}
+      {/* Grille questions */}
       <div
         className="absolute top-0 right-4 p-0 border rounded bg-white shadow"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(10, 24px)",
-          gap: "4px",
+          gridTemplateColumns: "repeat(22, 18px)",
+          gap: "3px",
         }}
       >
         {questions.map((_, index) => {
@@ -105,47 +108,45 @@ function Practitionner() {
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-6 h-6 flex items-center justify-center border rounded-full text-[10px] font-bold transition duration-200
+              className={`w-5 h-5 flex items-center justify-center border rounded-full text-[12px] font-bold transition duration-215
                 ${answered ? "bg-green-500 text-white" : "bg-orange-400 text-white"}
                 hover:scale-110 hover:shadow-md`}
             >
-              {flagged ? "🚩" : index + 1}
+              {flagged ? "🚩" : answered ? "✅" : index + 1}
             </button>
           );
         })}
       </div>
 
-      {/* ✅ Bloc Questions */}
+      {/* Bloc question */}
       <div className="mt-20 relative border p-7 rounded bg-white shadow">
-        {/* 🚩 Timer + Flag */}
+        {/* Timer + Flag */}
         <div className="absolute top-4 right-2 flex items-center gap-5">
-          <div className="flex items-center">
-            <svg width="60" height="60">
-              <circle cx="30" cy="30" r={radius - 15} stroke="#ddd" strokeWidth="5" fill="none" />
-              <circle
-                cx="30"
-                cy="30"
-                r={radius - 15}
-                stroke="#f97316"
-                strokeWidth="5"
-                fill="none"
-                strokeDasharray={circumference}
-                strokeDashoffset={circumference - progress}
-                strokeLinecap="round"
-              />
-              <text
-                x="50%"
-                y="50%"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="12"
-                fontWeight="bold"
-                fill="#333"
-              >
-                {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-              </text>
-            </svg>
-          </div>
+          <svg width="60" height="60">
+            <circle cx="30" cy="30" r={radius - 15} stroke="#ddd" strokeWidth="5" fill="none" />
+            <circle
+              cx="30"
+              cy="30"
+              r={radius - 15}
+              stroke="#f97316"
+              strokeWidth="5"
+              fill="none"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference - progress}
+              strokeLinecap="round"
+            />
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="12"
+              fontWeight="bold"
+              fill="#333"
+            >
+              {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+            </text>
+          </svg>
 
           <button onClick={toggleFlag} className="text-xl" title="Flagger cette question">
             🚩
@@ -163,7 +164,6 @@ function Practitionner() {
           )}
         </p>
 
-        {/* ✅ Liste des options */}
         <div className="mb-4">
           {questions[currentIndex].options.map((opt, idx) => (
             <label
@@ -181,7 +181,7 @@ function Practitionner() {
           ))}
         </div>
 
-        {/* ✅ Navigation */}
+        {/* Navigation */}
         <div className="flex gap-4">
           <button
             onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}

@@ -7,30 +7,35 @@ function Accueil() {
   // Fonction pour mélanger les questions
   const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
 
-  const handlePractitionerClick = () => {
-    // Mélanger et prendre 25 questions
-    const randomQuestions = shuffleArray([...questionsData]).slice(0, 25);
-
-    navigate("/practitionner", { state: { questions: randomQuestions } });
-  };
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-gray-100">
-      <h1 className="text-3xl font-bold">📚 Choisir un niveau</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+      <h1 className="text-3xl font-bold mb-6">📚 Sélectionnez votre niveau</h1>
 
-      <button
-        onClick={handlePractitionerClick}
-        className="px-6 py-3 bg-blue-500 text-white rounded text-lg"
-      >
-        🎓 Niveau Practitioner (25 Questions)
-      </button>
+      <div className="flex gap-4">
+        {/* ✅ Niveau Practitioner : 25 questions */}
+        <button
+          onClick={() =>
+            navigate("/practitionner", {
+              state: { questions: shuffleArray([...questionsData]).slice(0, 25) },
+            })
+          }
+          className="px-6 py-3 bg-blue-500 text-white rounded-lg text-lg hover:bg-blue-600"
+        >
+          🎯 Niveau Practitioner
+        </button>
 
-      <button
-        onClick={() => navigate("/associate")}
-        className="px-6 py-3 bg-green-500 text-white rounded text-lg"
-      >
-        🎓 Niveau Associate (à définir)
-      </button>
+        {/* ✅ Niveau Associate : 65 questions */}
+        <button
+          onClick={() =>
+            navigate("/practitionner", {
+              state: { questions: shuffleArray([...questionsData]).slice(0, 65) },
+            })
+          }
+          className="px-6 py-3 bg-green-500 text-white rounded-lg text-lg hover:bg-green-600"
+        >
+          🎓 Niveau Associate
+        </button>
+      </div>
     </div>
   );
 }
