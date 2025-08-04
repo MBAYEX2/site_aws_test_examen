@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import questionsData from "../awsquestion.js";
 
 function AnswersReview() {
   const location = useLocation();
@@ -11,6 +12,9 @@ function AnswersReview() {
   };
 
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // ✅ Mélanger les questions et en prendre 25
+  const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
 
   // ✅ Sélectionner uniquement les questions mal répondues
   const wrongQuestions = questions.filter((q, index) => {
@@ -45,7 +49,7 @@ function AnswersReview() {
               const isCorrect = q.correctAnswers.includes(idx);
               const isSelected = selectedAnswers[questions.indexOf(q)]?.includes(option);
 
-              let style = "bg-gray-50 border"; // neutre
+              let style = "bg-gray-50 border";
               let label = "";
 
               if (isCorrect) {
@@ -94,11 +98,16 @@ function AnswersReview() {
         </button>
       </div>
 
+      {/* ✅ Nouveau bouton Recommencer avec 25 nouvelles questions */}
       <button
-        onClick={() => navigate("/practitionner")}
+        onClick={() =>
+          navigate("/practitionner", {
+            state: { questions: shuffleArray([...questionsData]).slice(0, 25) },
+          })
+        }
         className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
       >
-        🔄 Recommencer
+        🔄 Recommencer (Nouvelles questions)
       </button>
     </div>
   );
