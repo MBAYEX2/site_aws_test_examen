@@ -5,17 +5,14 @@ function AnswersReview() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { score, total, timeUp, questions, selectedAnswers } = location.state || {
-    score: 0,
-    total: 0,
-    timeUp: false,
+  const { questions, selectedAnswers } = location.state || {
     questions: [],
     selectedAnswers: {},
   };
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // ✅ Filtrer uniquement les mauvaises réponses
+  // ✅ Sélectionner uniquement les questions mal répondues
   const wrongQuestions = questions.filter((q, index) => {
     const correctAnswers = q.correctAnswers;
     const userAnswers = selectedAnswers[index] || [];
@@ -42,29 +39,33 @@ function AnswersReview() {
             {currentIndex + 1}. {q.question}
           </h2>
 
+          {/* ✅ Affichage de toutes les réponses */}
           <div className="space-y-2">
-            {q.options.map((option, optIndex) => {
-              const isCorrect = q.correctAnswers.includes(optIndex);
+            {q.options.map((option, idx) => {
+              const isCorrect = q.correctAnswers.includes(idx);
               const isSelected = selectedAnswers[questions.indexOf(q)]?.includes(option);
+
+              let style = "bg-gray-50 border"; // neutre
+              let label = "";
+
+              if (isCorrect) {
+                style = "bg-green-100 border-green-500";
+                label = "✅ Bonne réponse";
+              }
+
+              if (isSelected && !isCorrect) {
+                style = "bg-red-100 border-red-500";
+                label = "❌ Mauvaise réponse choisie";
+              }
 
               return (
                 <label
-                  key={optIndex}
-                  className={`flex items-center p-2 rounded border ${
-                    isCorrect
-                      ? "bg-green-100 border-green-500"
-                      : isSelected
-                      ? "bg-red-100 border-red-500"
-                      : "bg-gray-50"
-                  }`}
+                  key={idx}
+                  className={`flex items-center p-2 rounded border ${style}`}
                 >
-                  <input type="checkbox" checked={isCorrect || isSelected} readOnly className="mr-2" />
+                  <input type="checkbox" checked={isSelected} readOnly className="mr-2" />
                   <span>{option}</span>
-
-                  {isCorrect && <span className="ml-2 text-green-600 font-bold">✅</span>}
-                  {!isCorrect && isSelected && (
-                    <span className="ml-2 text-red-600 font-bold">❌</span>
-                  )}
+                  {label && <span className="ml-2 font-bold">{label}</span>}
                 </label>
               );
             })}
@@ -72,7 +73,7 @@ function AnswersReview() {
         </div>
       )}
 
-      {/* ✅ Navigation entre questions */}
+      {/* ✅ Navigation */}
       <div className="flex gap-4 mt-6">
         <button
           onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
@@ -83,7 +84,9 @@ function AnswersReview() {
         </button>
 
         <button
-          onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, wrongQuestions.length - 1))}
+          onClick={() =>
+            setCurrentIndex((prev) => Math.min(prev + 1, wrongQuestions.length - 1))
+          }
           disabled={currentIndex === wrongQuestions.length - 1}
           className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
         >
@@ -91,7 +94,6 @@ function AnswersReview() {
         </button>
       </div>
 
-      {/* ✅ Bouton Recommencer */}
       <button
         onClick={() => navigate("/practitionner")}
         className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
