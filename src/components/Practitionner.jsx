@@ -6,17 +6,15 @@ function Practitionner() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Récupère les questions reçues via navigation ou génère 25 questions aléatoires
-  const initialQuestions =
-    location.state?.questions && location.state.questions.length > 0
-      ? location.state.questions
-      : [...questionsData].sort(() => Math.random() - 0.5).slice(0, 25);
+  const {
+    questions = [],
+    duration = 2100, // en secondes (35 min par défaut)
+  } = location.state || {};
 
-  const [questions] = useState(initialQuestions);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [flaggedQuestions, setFlaggedQuestions] = useState({});
-  const [timeLeft, setTimeLeft] = useState(120);
+  const [timeLeft, setTimeLeft] = useState(duration);
   const [timeUp, setTimeUp] = useState(false);
 
   // Timer
@@ -26,18 +24,19 @@ function Practitionner() {
       setTimeUp(true);
       return;
     }
+
     const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // Vérifie si la réponse est correcte
+  // Vérifie si réponse correcte
   const isAnswerCorrect = (question, userAnswers) => {
     const correct = question.correctAnswers.map((id) => question.options[id]).sort().toString();
     const user = [...(userAnswers || [])].sort().toString();
     return correct === user;
   };
 
-  // Soumettre et calculer le score
+  // Soumettre les réponses
   const handleSubmit = (timeExpired = false) => {
     let totalCorrect = 0;
     questions.forEach((q, i) => {
@@ -57,23 +56,40 @@ function Practitionner() {
     });
   };
 
-  // Gérer le changement de réponse
+  // Gérer les changements de réponses
   const handleAnswerChange = (answer) => {
     const current = selectedAnswers[currentIndex] || [];
-    if (current.includes(answer)) {
-      setSelectedAnswers({
-        ...selectedAnswers,
-        [currentIndex]: current.filter((a) => a !== answer),
-      });
+
+    // Si réponse multiple
+    if (questions[currentIndex].correctAnswers.length > 1) {
+      if (current.includes(answer)) {
+        setSelectedAnswers({
+          ...selectedAnswers,
+          [currentIndex]: current.filter((a) => a !== answer),
+        });
+      } else {
+        setSelectedAnswers({
+          ...selectedAnswers,
+          [currentIndex]: [...current, answer],
+        });
+      }
     } else {
+      // Si réponse unique
       setSelectedAnswers({
         ...selectedAnswers,
-        [currentIndex]: [...current, answer],
+        [currentIndex]: [answer],
       });
     }
   };
 
-  // Flaguer / déflaguer question
+  // Désélectionner toutes les réponses
+  const deselectAll = () => {
+    setSelectedAnswers({
+      ...selectedAnswers,
+      [currentIndex]: [],
+    });
+  };
+
   const toggleFlag = () => {
     setFlaggedQuestions((prev) => ({
       ...prev,
@@ -84,44 +100,44 @@ function Practitionner() {
   // Timer visuel
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  const totalTime = 120;
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
-  const progress = ((totalTime - timeLeft) / totalTime) * circumference;
+  const progress = ((duration - timeLeft) / duration) * circumference;
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 relative">
-      {/* Grille questions */}
+      {/* Grille des questions */}
       <div
-        className="absolute top-0 right-4 p-0 border rounded bg-white shadow"
+        className="absolute top-0 right-4 p-1 border rounded bg-gray-900 shadow"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(22, 18px)",
-          gap: "3px",
+          gap: "3.5px",
         }}
       >
         {questions.map((_, index) => {
-          const answered = selectedAnswers[index] && selectedAnswers[index].length > 0;
+          const answered = selectedAnswers[index]?.length > 0;
           const flagged = flaggedQuestions[index];
 
           return (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-5 h-5 flex items-center justify-center border rounded-full text-[12px] font-bold transition duration-215
-                ${answered ? "bg-green-500 text-white" : "bg-orange-400 text-white"}
+              className={`w-5.1 h-5.2 flex items-center justify-center border rounded-2xl text-[12px] font-bold transition duration-215
+                ${answered ? "bg-green-500 text-amber-950" : "bg-fuchsia-600 text-white"}
                 hover:scale-110 hover:shadow-md`}
+              title={`Question ${index + 1}`}
             >
-              {flagged ? "🚩" : answered ? "✅" : index + 1}
+              {flagged ? "🚩" : index + 1}
             </button>
           );
         })}
       </div>
 
       {/* Bloc question */}
-      <div className="mt-20 relative border p-7 rounded bg-white shadow">
-        {/* Timer + Flag */}
-        <div className="absolute top-4 right-2 flex items-center gap-5">
+      <div className="mt-27 border p-6 rounded bg-white shadow relative">
+        {/* Timer et Flag */}
+        <div className="absolute top-1 right-3 flex items-center gap-7">
           <svg width="60" height="60">
             <circle cx="30" cy="30" r={radius - 15} stroke="#ddd" strokeWidth="5" fill="none" />
             <circle
@@ -164,14 +180,27 @@ function Practitionner() {
           )}
         </p>
 
+        {/* Options avec checkbox ou radio */}
         <div className="mb-4">
+          {questions[currentIndex].correctAnswers.length > 1 && (
+            <button
+              onClick={deselectAll}
+              className="mb-3 text-sm text-red-600 underline"
+            >
+              ❌ Tout désélectionner
+            </button>
+          )}
+
           {questions[currentIndex].options.map((opt, idx) => (
             <label
               key={idx}
               className="block p-2 mb-2 border rounded cursor-pointer hover:bg-gray-100"
             >
               <input
-                type={questions[currentIndex].correctAnswers.length > 1 ? "checkbox" : "radio"}
+                type={
+                  questions[currentIndex].correctAnswers.length > 1 ? "checkbox" : "radio"
+                }
+                name={`question-${currentIndex}`}
                 checked={selectedAnswers[currentIndex]?.includes(opt) || false}
                 onChange={() => handleAnswerChange(opt)}
                 className="mr-2"
