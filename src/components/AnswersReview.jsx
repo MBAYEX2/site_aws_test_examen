@@ -6,25 +6,26 @@ function AnswersReview() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { questions, selectedAnswers } = location.state || {
-    questions: [],
-    selectedAnswers: {},
-  };
+  // Récupère les données (score/total/timeUp peuvent être absentes)
+  const {
+    questions = [],
+    selectedAnswers = {},
+    score = 0,
+    total = questions.length || 0,
+    timeUp = false,
+  } = location.state || {};
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
 
-  // Nombre de questions initiales
-  const initialCount = questions.length || 25; // 25 par défaut si vide
-
   // Sélectionner uniquement les questions mal répondues
   const wrongQuestions = questions.filter((q, index) => {
     const correctAnswers = q.correctAnswers;
     const userAnswers = selectedAnswers[index] || [];
 
-    const correctAsText = correctAnswers.sort().toString();
+    const correctAsText = [...correctAnswers].sort().toString();
     const userAsText = q.options
       .map((opt, idx) => (userAnswers.includes(opt) ? idx : null))
       .filter((v) => v !== null)
@@ -35,6 +36,26 @@ function AnswersReview() {
   });
 
   const q = wrongQuestions[currentIndex] || {};
+
+  // Recommencer (nouvelles questions)
+  const handleRetry = () => {
+    navigate("/practitionner", {
+      state: { questions: shuffleArray([...questionsData]).slice(0, questions.length || 25) },
+    });
+  };
+
+  // Revenir au score — envoie les données disponibles vers /score
+  const handleReturnToScore = () => {
+    navigate("/score", {
+      state: {
+        score,
+        total,
+        timeUp,
+        questions,
+        selectedAnswers,
+      },
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
@@ -66,7 +87,7 @@ function AnswersReview() {
 
               return (
                 <label key={idx} className={`flex items-center p-2 rounded border ${style}`}>
-                  <input type="checkbox" checked={isSelected} readOnly className="mr-2" />
+                  <input type="checkbox" checked={!!isSelected} readOnly className="mr-2" />
                   <span>{option}</span>
                   {label && <span className="ml-2 font-bold">{label}</span>}
                 </label>
@@ -94,16 +115,22 @@ function AnswersReview() {
         </button>
       </div>
 
-      <button
-        onClick={() =>
-          navigate("/practitionner", {
-            state: { questions: shuffleArray([...questionsData]).slice(0, initialCount) },
-          })
-        }
-        className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-      >
-        🔄 Recommencer (Nouvelles questions)
-      </button>
+      <div className="flex flex-col items-center">
+        <button
+          onClick={handleRetry}
+          className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+        >
+          🔄 Recommencer (Nouvelles questions)
+        </button>
+
+        {/* Nouveau bouton : revenir au score */}
+        <button
+          onClick={handleReturnToScore}
+          className="mt-3 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+        >
+          ⬅ Revenir au score
+        </button>
+      </div>
     </div>
   );
 }
