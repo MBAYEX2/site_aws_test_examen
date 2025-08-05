@@ -108,7 +108,7 @@ function Practitionner() {
     <div className="min-h-screen bg-gray-100 p-4 relative">
       {/* Grille des questions */}
       <div
-        className="absolute top-0 right-4 p-1 border rounded bg-gray-900 shadow"
+        className="absolute top-0 right-4 p-1 border rounded bg-gray-500 shadow"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(22, 18px)",
