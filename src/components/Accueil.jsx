@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import awsLogo from "../assets/aws_orange.png";
-import "./Accueil.css"; // On crée un fichier CSS séparé pour l'animation
 
 export default function Accueil() {
   const navigate = useNavigate();
@@ -18,12 +17,30 @@ export default function Accueil() {
       <div className="relative z-10 text-center px-5">
         <h1 className="text-3xl md:text-5xl font-bold mb-5">
           Bienvenue sur A
-          <span className="shiny-w">W</span>
+          <span
+            style={{
+              background: "linear-gradient(45deg, #FFB84D, #FF9900, #CC7A00)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              fontWeight: "bold",
+            }}
+          >
+            W
+          </span>
           S Nafar App
         </h1>
         <p className="mb-5 text-3xl">
           Teste tes connaissances A
-          <span className="shiny-w">W</span>
+          <span
+            style={{
+              background: "linear-gradient(45deg, #FFB84D, #FF9900, #CC7A00)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              fontWeight: "bold",
+            }}
+          >
+            W
+          </span>
           S Cloud Practitioner & Associate
         </p>
 

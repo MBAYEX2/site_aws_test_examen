@@ -16,46 +16,46 @@
 .animate-slide-up {
   animation: slide-up 0.8s ease-out forwards;
 }
-/* animation slide-up (utilisée par .animate-slide-up) */
-@keyframes slide-up {
-  0% {
-    transform: translateY(60px);
-    opacity: 0;
+/* Couleur orange AWS */
+:root {
+  --aws-orange: #ff9900;
+  --aws-orange-light: #ffb84d;
+}
+
+/* Animation pulse orange pour AWS */
+@keyframes pulseOrange {
+  0%, 100% {
+    color: var(--aws-orange);
+    transform: scale(1);
+    text-shadow: none;
   }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
+  50% {
+    color: var(--aws-orange-light);
+    transform: scale(1.1);
+    text-shadow: 0 0 8px var(--aws-orange-light);
   }
 }
-.animate-slide-up {
-  animation: slide-up 0.8s ease-out forwards;
+
+/* Animation pour la lettre W */
+.shiny-w {
+  color: var(--aws-orange);
+  font-weight: 900;
+  animation: pulseOrange 2.5s ease-in-out infinite;
+  display: inline-block;
 }
 
-/* gradient animé pour boutons */
-.btn-gradient {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(90deg, #ff7a18 0%, #ffb340 50%, #ff7a18 100%);
-  background-size: 200% 100%;
-  transition: transform .25s ease, box-shadow .25s ease;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+/* Animation pour la lettre B (même que W) */
+.shiny-b {
+  color: var(--aws-orange);
+  font-weight: 900;
+  animation: pulseOrange 2.5s ease-in-out infinite;
+  display: inline-block;
 }
 
-/* hover animation to move gradient */
-.btn-gradient:hover {
-  background-position: 100% 0;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-}
-
-/* slight focus styles */
-.btn-gradient:focus {
-  outline: none;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.22), 0 0 0 4px rgba(255,182,48,0.15);
-}
-
-/* make select look consistent on mobile (optional) */
-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+/* Optionnel : style global de ton page */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #111; /* foncé pour bien voir le orange */
+  /*color: white;*/
 }

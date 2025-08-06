@@ -22,7 +22,7 @@ export default function RoleSelector() {
 
   return (
     <>
-      {/* Fond fixe / parallax : div positionnée en fixed derrière tout */}
+      {/* Fond fixe AWS */}
       <div
         className="fixed inset-0 -z-10 bg-center bg-cover"
         style={{
@@ -35,10 +35,10 @@ export default function RoleSelector() {
         aria-hidden="true"
       />
 
-      {/* Optionnel : overlay sombre pour meilleure lisibilité */}
+      {/* Overlay sombre */}
       <div className="fixed inset-0 -z-9 bg-black/35" aria-hidden="true" />
 
-      {/* Contenu principal (au-dessus du fond) */}
+      {/* Contenu principal en bas */}
       <div className="min-h-screen flex items-end justify-center px-6 py-9">
         <div className="w-full max-w-2xl space-y-6">
           <div className="bg-white/40 backdrop-blur-sm rounded-2x1 border border-gray-200 shadow-lg p-6 flex flex-col items-center">

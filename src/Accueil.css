@@ -1,37 +1,49 @@
 .shiny-w {
-  background: linear-gradient(45deg, #FFB84D, #FF9900, #CC7A00);
+  background: linear-gradient(45deg, #FFD580, #FFB84D, #FF9900, #CC7A00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
   position: relative;
   display: inline-block;
   overflow: hidden;
+  animation: pulse 3s ease-in-out infinite; /* Zoom lent et élégant */
 }
 
 .shiny-w::after {
   content: "";
   position: absolute;
   top: 0;
-  left: -100%;
+  left: -150%;
   width: 100%;
   height: 100%;
   background: linear-gradient(
     120deg,
     transparent,
-    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.4),
     transparent
   );
-  animation: shine 2s infinite;
+  animation: shine 4s ease-in-out infinite;
 }
 
+/* Reflet doré qui traverse le W */
 @keyframes shine {
   0% {
-    left: -100%;
+    left: -150%;
   }
-  50% {
-    left: 100%;
+  40% {
+    left: 150%;
   }
   100% {
-    left: 100%;
+    left: 150%;
+  }
+}
+
+/* Effet de zoom premium */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
   }
 }
