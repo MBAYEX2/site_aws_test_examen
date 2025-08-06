@@ -30,25 +30,25 @@ function TestPersonaliser() {
   const start65x90 = () => handleStart({ count: 65, duration: 90 });
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4 py-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-12 py-2">
       {/* Conteneur central */}
-      <div className="w-full max-w-3xl space-y-8">
+      <div className="w-full max-w-3xl space-y-1">
 
         {/* 1er bloc : Test standard AWS */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col items-center">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col items-center">
           <h2 className="text-lg font-semibold mb-3">Test standard AWS</h2>
           <button
             onClick={start65x90}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg text-base"
+            className="bg-green-600 hover:bg-green-700 text-white px-1 py-2 rounded-lg text-base"
             title="Démarrer un test de 65 questions — 90 minutes"
           >
-            ⚡ Test 65 questions — 90 min
+            ⚡ 65 QCM —> 90 min
           </button>
         </div>
 
         {/* 2e bloc : Test personnalisé */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <h1 className="text-2xl font-bold mb-4 text-center">📚 AWS Cloud Practitioner Quiz</h1>
+          <h1 className="text-2xl font-bold mb-4 text-center">📚 Test aws personnalisé</h1>
 
           <div className="flex flex-col sm:flex-row gap-6 mb-6 justify-center">
             {/* Sélection nombre de questions */}
