@@ -121,15 +121,7 @@ function AnswersReview() {
           className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
         >
           🔄 Recommencer (Nouvelles questions)
-        </button>
-
-        {/* Nouveau bouton : revenir au score */}
-        <button
-          onClick={handleReturnToScore}
-          className="mt-3 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
-        >
-          ⬅ Revenir au score
-        </button>
+        </button>        
       </div>
     </div>
   );

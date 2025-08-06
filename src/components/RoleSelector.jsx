@@ -1,7 +1,7 @@
 // src/components/RoleSelector.jsx
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import pract2 from "../assets/pract2.webp";
 import ac1 from "../assets/ac1.webp";
 import awsOrange from "../assets/aws_orange.png";
@@ -39,7 +39,7 @@ export default function RoleSelector() {
     hidden: {},
     show: {
       transition: {
-        staggerChildren: 0.25, // délai plus long entre chaque élément
+        staggerChildren: 0.25,
         delayChildren: 0.3,
       },
     },
@@ -58,6 +58,19 @@ export default function RoleSelector() {
   const cardRightVariant = {
     hidden: { opacity: 0, x: 60 },
     show: { opacity: 1, x: 0, transition: { duration: 0.9, ease: "easeOut" } },
+  };
+
+  // Modal animation variants
+  const overlayVariant = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.25 } },
+    exit: { opacity: 0, transition: { duration: 0.2 } },
+  };
+
+  const modalVariant = {
+    hidden: { opacity: 0, scale: 0.96, y: 10 },
+    visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+    exit: { opacity: 0, scale: 0.96, y: 10, transition: { duration: 0.2, ease: "easeIn" } },
   };
 
   return (
@@ -95,10 +108,12 @@ export default function RoleSelector() {
                 src={pract2}
                 alt="Practitionner"
                 className="mt-2 w-40 h-28 object-cover rounded-md shadow-sm"
+                loading="lazy"
               />
               <button
                 onClick={goToPractitionner}
-                className="mt-4 w-full px-6 py-3 rounded-lg bg-orange-500 text-black font-medium transform transition duration-200 hover:scale-[1.03] hover:shadow-lg"
+                className="mt-4 w-full px-6 py-3 rounded-lg bg-orange-500 text-black font-medium transform transition duration-200 hover:scale-[1.03] hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-orange-200"
+                aria-label="Commencer le test Practitionner"
               >
                 Practitionner
               </button>
@@ -113,10 +128,11 @@ export default function RoleSelector() {
                 src={ac1}
                 alt="Associate"
                 className="mt-2 w-40 h-28 object-cover rounded-md shadow-sm"
+                loading="lazy"
               />
               <button
                 onClick={openAssociateModal}
-                className="mt-4 w-full px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium transform transition duration-200 hover:scale-[1.03] hover:shadow-lg"
+                className="mt-4 w-full px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium transform transition duration-200 hover:scale-[1.03] hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-gray-200"
               >
                 Associate
               </button>
@@ -125,29 +141,50 @@ export default function RoleSelector() {
         </div>
       </div>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/40" />
-          <div
-            ref={modalRef}
-            className="relative bg-white rounded-xl shadow-lg max-w-md w-full p-6 mx-4 z-10"
+      {/* Modal animated with AnimatePresence */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            role="dialog"
+            aria-modal="true"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={overlayVariant}
           >
-            <h3 className="text-lg font-semibold mb-2">Section en développement</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              La partie <strong>Associate</strong> est en cours de développement. Reviens bientôt !
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-sm"
-              >
-                Fermer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            {/* Background overlay */}
+            <motion.div
+              className="absolute inset-0 bg-black/40"
+              variants={overlayVariant}
+              aria-hidden="true"
+            />
+
+            {/* Modal box */}
+            <motion.div
+              ref={modalRef}
+              className="relative bg-white rounded-xl shadow-lg max-w-md w-full p-6 mx-4 z-10"
+              variants={modalVariant}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <h3 className="text-lg font-semibold mb-2">Section en développement</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                La partie <strong>Associate</strong> est en cours de développement. Reviens bientôt !
+              </p>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                >
+                  Fermer
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
