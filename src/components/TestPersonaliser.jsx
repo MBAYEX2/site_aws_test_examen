@@ -36,15 +36,15 @@ function TestPersonaliser() {
       {/* Conteneur central */}
       <div className="w-full max-w-3xl space-y-6 relative z-10 mb-8 animate-slide-up">
         {/* Bloc Test standard AWS (glass) */}
-        <div className="bg-white/20 backdrop-blur-md rounded-3xl border border-white/20 shadow-lg p-6 flex flex-col items-center">
-          <h2 className="text-lg font-semibold mb-3 text-neutral-50">Test standard AWS</h2>
+        <div className="bg-white/20 backdrop-blur-md rounded-3xl border border-white shadow-lg p-9 flex flex-col items-center">
+          <h2 className="text-3xl font-semibold mb-9 text-neutral-50">Test standard AWS</h2>
 
           <button
             onClick={start65x90}
             className="btn-gradient w-auto px-6 py-2 rounded-lg text-white font-medium shadow-md transform transition-all duration-200 hover:scale-105"
             title="Démarrer un test de 65 questions — 90 minutes"
           >
-            ⚡ 65 QCM — 90 min
+            ⚡ 65 QCM --> 90 min
           </button>
         </div>
 

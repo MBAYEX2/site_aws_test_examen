@@ -1,15 +1,31 @@
-import { useState, useEffect } from "react";
+// src/components/Practitionner.jsx
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import questionsData from "../awsquestion.js";
 
-function Practitionner() {
+function sanitizeQuestionText(text) {
+  if (!text) return "";
+  return text
+    .replace(/\(Choisissez[^)]*\)/gi, "")
+    .replace(/\s+[A-E]\.\s.+$/i, "")
+    .trim();
+}
+
+export default function Practitionner() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const {
-    questions = [],
-    duration = 2100, // en secondes (35 min par défaut)
+    questions: routeQuestions,
+    duration: routeDuration = 35 * 60,
   } = location.state || {};
+
+  const questions =
+    Array.isArray(routeQuestions) && routeQuestions.length > 0
+      ? routeQuestions
+      : questionsData || [];
+
+  const duration = Number(routeDuration) || 35 * 60;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -17,228 +33,313 @@ function Practitionner() {
   const [timeLeft, setTimeLeft] = useState(duration);
   const [timeUp, setTimeUp] = useState(false);
 
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const intervalRef = useRef(null);
+  const finishedRef = useRef(false);
+  const mountedRef = useRef(false);
+
   // Timer
   useEffect(() => {
-    if (timeLeft <= 0) {
-      handleSubmit(true);
-      setTimeUp(true);
-      return;
+    setTimeLeft(duration);
+    setTimeUp(false);
+    finishedRef.current = false;
+
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current);
+          finishedRef.current = true;
+          setTimeUp(true);
+          setTimeout(() => handleSubmit(true), 150);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duration]);
+
+  // beforeunload (close / refresh)
+  useEffect(() => {
+    const onBeforeUnload = (e) => {
+      // Si le test est déjà terminé, ne rien faire
+      if (finishedRef.current) return undefined;
+      // Standard: définir returnValue empêche l'action et montre le message du navigateur
+      e.preventDefault();
+      e.returnValue = "";
+      return "";
+    };
+
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, []);
+
+  // Back button (popstate) handling : push a state and intercept popstate to confirm
+  useEffect(() => {
+    // Push a dummy state to history so back button triggers popstate handler
+    // Only push once after mount
+    if (!mountedRef.current) {
+      try {
+        window.history.pushState({ pract: true }, "");
+        mountedRef.current = true;
+      } catch (err) {
+        // ignore
+      }
     }
 
-    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft]);
+    const onPopState = (e) => {
+      // If test finished, allow navigation
+      if (finishedRef.current) return;
 
-  // Vérifie si réponse correcte
-  const isAnswerCorrect = (question, userAnswers) => {
-    const correct = question.correctAnswers.map((id) => question.options[id]).sort().toString();
+      const confirmLeave = window.confirm(
+        "Vous êtes sur le point de quitter le test. Vos réponses seront perdues si vous quittez. Voulez-vous vraiment partir ?"
+      );
+      if (!confirmLeave) {
+        // User cancelled navigation — push state back so they remain on the page
+        try {
+          window.history.pushState({ pract: true }, "");
+        } catch (err) {
+          // ignore
+        }
+      } else {
+        // allow navigation: remove beforeunload handler and let browser go back
+        finishedRef.current = true;
+        window.removeEventListener("beforeunload", () => {});
+      }
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  const isAnswerCorrect = (question, userAnswers = []) => {
+    if (!question) return false;
+    const correctArr = (question.correctAnswers || []).map(
+      (id) => question.options[id]
+    );
+    const correct = [...correctArr].sort().toString();
     const user = [...(userAnswers || [])].sort().toString();
     return correct === user;
   };
 
-  // Soumettre les réponses
   const handleSubmit = (timeExpired = false) => {
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+
     let totalCorrect = 0;
     questions.forEach((q, i) => {
-      if (isAnswerCorrect(q, selectedAnswers[i])) {
-        totalCorrect++;
-      }
+      const userAns = selectedAnswers[i] || [];
+      if (isAnswerCorrect(q, userAns)) totalCorrect++;
     });
 
+    // navigate to score
     navigate("/score", {
       state: {
         score: totalCorrect,
         total: questions.length,
-        timeUp: timeExpired,
+        timeUp: !!timeExpired,
         questions,
         selectedAnswers,
       },
     });
   };
 
-  // Gérer les changements de réponses
   const handleAnswerChange = (answer) => {
-    const current = selectedAnswers[currentIndex] || [];
+    const current = selectedAnswers[currentIndex]
+      ? [...selectedAnswers[currentIndex]]
+      : [];
+    const isMulti =
+      (questions[currentIndex]?.correctAnswers?.length || 0) > 1;
 
-    // Si réponse multiple
-    if (questions[currentIndex].correctAnswers.length > 1) {
+    if (isMulti) {
       if (current.includes(answer)) {
-        setSelectedAnswers({
-          ...selectedAnswers,
-          [currentIndex]: current.filter((a) => a !== answer),
-        });
+        const updated = current.filter((a) => a !== answer);
+        setSelectedAnswers((prev) => ({ ...prev, [currentIndex]: updated }));
       } else {
-        setSelectedAnswers({
-          ...selectedAnswers,
-          [currentIndex]: [...current, answer],
-        });
+        setSelectedAnswers((prev) => ({ ...prev, [currentIndex]: [...current, answer] }));
       }
     } else {
-      // Si réponse unique
-      setSelectedAnswers({
-        ...selectedAnswers,
-        [currentIndex]: [answer],
-      });
+      setSelectedAnswers((prev) => ({ ...prev, [currentIndex]: [answer] }));
     }
   };
 
-  // Désélectionner toutes les réponses
   const deselectAll = () => {
-    setSelectedAnswers({
-      ...selectedAnswers,
-      [currentIndex]: [],
-    });
+    setSelectedAnswers((prev) => ({ ...prev, [currentIndex]: [] }));
   };
 
   const toggleFlag = () => {
-    setFlaggedQuestions((prev) => ({
-      ...prev,
-      [currentIndex]: !prev[currentIndex],
-    }));
+    setFlaggedQuestions((prev) => ({ ...prev, [currentIndex]: !prev[currentIndex] }));
   };
 
-  // Timer visuel
+  const radius = 24;
+  const circumference = 2 * Math.PI * radius;
+  const progressRatio = Math.max(0, Math.min(1, (duration - timeLeft) / Math.max(1, duration)));
+  const progress = progressRatio * circumference;
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  const radius = 40;
-  const circumference = 2 * Math.PI * radius;
-  const progress = ((duration - timeLeft) / duration) * circumference;
+
+  if (!Array.isArray(questions) || questions.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-2">Aucune question disponible</h2>
+          <p className="text-gray-600 mb-4">Vérifie ta configuration ou recharge la page.</p>
+          <button onClick={() => navigate("/roles")} className="px-4 py-2 bg-blue-500 text-white rounded">
+            Retour
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const q = questions[currentIndex];
+  const isMultiCurrent = (q.correctAnswers?.length || 0) > 1;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 relative">
-      {/* Grille des questions */}
-      <div
-        className="absolute top-0 right-4 p-1 border rounded bg-gray-500 shadow"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(22, 18px)",
-          gap: "3.5px",
-        }}
-      >
-        {questions.map((_, index) => {
-          const answered = selectedAnswers[index]?.length > 0;
-          const flagged = flaggedQuestions[index];
-
-          return (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-5.1 h-5.2 flex items-center justify-center border rounded-2xl text-[12px] font-bold transition duration-215
-                ${answered ? "bg-green-500 text-amber-950" : "bg-fuchsia-600 text-white"}
-                hover:scale-110 hover:shadow-md`}
-              title={`Question ${index + 1}`}
-            >
-              {flagged ? "🚩" : index + 1}
-            </button>
-          );
-        })}
+    <div className="min-h-screen bg-gray-100 p-6">
+      {/* Grid questions */}
+      <div className="fixed top-4 right-4 p-2 rounded bg-white/80 shadow z-20">
+        <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(6, 28px)" }}>
+          {questions.map((_, index) => {
+            const answered = (selectedAnswers[index] || []).length > 0;
+            const flagged = !!flaggedQuestions[index];
+            return (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                title={`Question ${index + 1}`}
+                className={`w-7 h-7 flex items-center justify-center text-xs font-semibold rounded ${
+                  answered ? "bg-green-600 text-white" : "bg-gray-200 text-gray-800"
+                } ${flagged ? "ring-2 ring-yellow-300" : ""}`}
+              >
+                {flagged ? "🚩" : index + 1}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Bloc question */}
-      <div className="mt-27 border p-6 rounded bg-white shadow relative">
-        {/* Timer et Flag */}
-        <div className="absolute top-1 right-3 flex items-center gap-7">
-          <svg width="60" height="60">
-            <circle cx="30" cy="30" r={radius - 15} stroke="#ddd" strokeWidth="5" fill="none" />
-            <circle
-              cx="30"
-              cy="30"
-              r={radius - 15}
-              stroke="#f97316"
-              strokeWidth="5"
-              fill="none"
-              strokeDasharray={circumference}
-              strokeDashoffset={circumference - progress}
-              strokeLinecap="round"
-            />
-            <text
-              x="50%"
-              y="50%"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fontSize="12"
-              fontWeight="bold"
-              fill="#333"
-            >
-              {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-            </text>
-          </svg>
-
-          <button onClick={toggleFlag} className="text-xl" title="Flagger cette question">
-            🚩
-          </button>
-        </div>
-
-        <h2 className="text-xl font-bold mb-4">Question {currentIndex + 1}</h2>
-
-        <p className="text-lg font-medium mb-2">
-          {questions[currentIndex].question.replace(/\s+[A-E]\.\s.+$/, "")}
-          {questions[currentIndex].correctAnswers.length > 1 && (
-            <span className="text-sm font-semibold text-gray-600">
-              (Choisissez plusieurs options)
-            </span>
-          )}
-        </p>
-
-        {/* Options avec checkbox ou radio */}
-        <div className="mb-4">
-          {questions[currentIndex].correctAnswers.length > 1 && (
-            <button
-              onClick={deselectAll}
-              className="mb-3 text-sm text-red-600 underline"
-            >
-              ❌ Tout désélectionner
-            </button>
-          )}
-
-          {questions[currentIndex].options.map((opt, idx) => (
-            <label
-              key={idx}
-              className="block p-2 mb-2 border rounded cursor-pointer hover:bg-gray-100"
-            >
-              <input
-                type={
-                  questions[currentIndex].correctAnswers.length > 1 ? "checkbox" : "radio"
-                }
-                name={`question-${currentIndex}`}
-                checked={selectedAnswers[currentIndex]?.includes(opt) || false}
-                onChange={() => handleAnswerChange(opt)}
-                className="mr-2"
+      {/* Question */}
+      <div className="max-w-3xl mx-auto mt-8">
+        <div className="relative bg-white p-6 rounded-lg shadow">
+          {/* Timer */}
+          <div className="absolute top-4 right-4 flex items-center gap-3">
+            <svg width="60" height="60" viewBox="0 0 60 60">
+              <circle cx="30" cy="30" r={radius} stroke="#eee" strokeWidth="5" fill="none" />
+              <circle
+                cx="30"
+                cy="30"
+                r={radius}
+                stroke="#f97316"
+                strokeWidth="5"
+                fill="none"
+                strokeDasharray={circumference}
+                strokeDashoffset={Math.max(0, circumference - progress)}
+                strokeLinecap="round"
+                transform={`rotate(-90 30 30)`}
               />
-              {opt}
-            </label>
-          ))}
-        </div>
+              <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontSize="10" fill="#111">
+                {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+              </text>
+            </svg>
 
-        {/* Navigation */}
-        <div className="flex gap-4">
-          <button
-            onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
-            disabled={currentIndex === 0}
-            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-          >
-            ⬅ Précédent
-          </button>
+            <button onClick={toggleFlag} className="p-2 rounded hover:bg-gray-100" aria-pressed={!!flaggedQuestions[currentIndex]}>
+              🚩
+            </button>
+          </div>
 
-          {currentIndex < questions.length - 1 ? (
-            <button
-              onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, questions.length - 1))}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              Suivant ➡
-            </button>
-          ) : (
-            <button
-              onClick={() => handleSubmit(false)}
-              className="px-4 py-2 bg-green-500 text-white rounded"
-            >
-              ✅ Terminer
-            </button>
-          )}
+          <h2 className="text-xl font-bold mb-3">Question {currentIndex + 1}</h2>
+
+          <p className="text-lg font-medium mb-4">
+            {sanitizeQuestionText(q.question)}
+            {isMultiCurrent && <span className="ml-2 text-sm text-gray-600">(Choisissez plusieurs options)</span>}
+          </p>
+
+          {/* Options */}
+          <div className="mb-4">
+            {isMultiCurrent && (
+              <button onClick={deselectAll} className="mb-3 text-sm text-red-600 underline">
+                ❌ Tout désélectionner
+              </button>
+            )}
+            {q.options?.map((opt, idx) => {
+              const isChecked = (selectedAnswers[currentIndex] || []).includes(opt);
+              const inputType = isMultiCurrent ? "checkbox" : "radio";
+              return (
+                <label key={idx} className={`block p-3 mb-2 border rounded cursor-pointer hover:bg-gray-50 ${isChecked ? "bg-gray-50" : ""}`}>
+                  <input type={inputType} name={`question-${currentIndex}`} checked={isChecked} onChange={() => handleAnswerChange(opt)} className="mr-3" />
+                  {opt}
+                </label>
+              );
+            })}
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex gap-2">
+              <button onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))} disabled={currentIndex === 0} className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
+                ⬅ Précédent
+              </button>
+              {currentIndex < questions.length - 1 ? (
+                <button onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, questions.length - 1))} className="px-4 py-2 bg-blue-600 text-white rounded">
+                  Suivant ➡
+                </button>
+              ) : (
+                <button onClick={() => setShowConfirmModal(true)} className="px-4 py-2 bg-green-600 text-white rounded">
+                  ✅ Terminer
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  if (finishedRef.current) return navigate(-1);
+                  const confirmLeave = window.confirm("Voulez-vous quitter le test ? Vos réponses ne seront pas sauvegardées.");
+                  if (confirmLeave) {
+                    finishedRef.current = true;
+                    navigate(-1);
+                  }
+                }}
+                className="text-sm text-gray-600 underline"
+              >
+                Annuler
+              </button>
+              <span className="text-sm text-gray-500">Questions : {questions.length}</span>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowConfirmModal(false)} />
+          <div className="relative bg-white rounded-lg p-6 z-10 max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-2">Confirmer la soumission</h3>
+            <p className="text-sm text-gray-700 mb-4">
+              Êtes-vous sûr(e) de vouloir terminer le test ? Vos réponses seront envoyées et vous ne pourrez plus revenir.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowConfirmModal(false)} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                Annuler
+              </button>
+              <button onClick={() => { setShowConfirmModal(false); handleSubmit(false); }} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Oui, terminer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-export default Practitionner;
