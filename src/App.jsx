@@ -4,11 +4,13 @@ import Score from "./components/Score";
 import AnswersReview from "./components/AnswersReview";
 import TestPersonaliser from "./components/TestPersonaliser";
 import RoleSelector from "./components/RoleSelector";
+import Accueil from "./components/Accueil";
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Accueil />} />
         <Route path="/RoleSelector" element={<RoleSelector />} />
          <Route path="/TestPersonaliser" element={<TestPersonaliser />} />
         <Route path="/Practitionner " element={<Practitionner />} />
