@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios"; // assure-toi que le chemin est correct
-import awsLogo from "./src/assets/aws_orange.png";
+//import awsLogo from "./src/assets/aws_orange.png";
 
 export default function Login() {
   const navigate = useNavigate();
