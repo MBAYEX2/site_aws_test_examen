@@ -34,7 +34,7 @@ export default function Login() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center relative"
       style={{ backgroundImage: `url(${awsLogo})` }}
     >
       <div className="bg-white/90 backdrop-blur-lg p-8 rounded-xl shadow-lg w-96 mt-16 ml-4">
@@ -89,6 +89,10 @@ export default function Login() {
           </a>
         </p>
       </div>
+
+      <footer className="absolute bottom-0 w-full text-center py-4 text-sm text-gray-600 bg-white/80">
+        &copy; {new Date().getFullYear()} AWS Test App. Tous droits réservés.
+      </footer>
     </div>
   );
 }

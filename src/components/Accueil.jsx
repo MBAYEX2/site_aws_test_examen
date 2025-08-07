@@ -1,6 +1,7 @@
+// src/components/Accueil.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import awsOrange from "../assets/aws_orange.png";  // Import de l'image
+import awsOrange from "../assets/aws_orange.png"; // Import de l'image
 
 export default function Accueil() {
   const navigate = useNavigate();
@@ -18,13 +19,14 @@ export default function Accueil() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center bg-center bg-cover text-white relative"
-      style={{ backgroundImage: `url(${awsOrange})` }}  // Image en fond
+      className="min-h-screen flex flex-col justify-between bg-center bg-cover text-white relative"
+      style={{ backgroundImage: `url(${awsOrange})` }}
     >
       {/* Overlay sombre */}
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
-      <div className="relative z-10 text-center px-5 max-w-3xl">
+      {/* Contenu principal */}
+      <div className="relative z-10 text-center px-5 max-w-3xl mx-auto mt-32">
         <h1 className="text-3xl md:text-5xl font-bold mb-5 leading-tight">
           Bienvenue sur A
           <span style={gradientStyle} className="mx-1">
@@ -51,6 +53,11 @@ export default function Accueil() {
           </button>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="relative z-10 text-center py-4">
+        <p className="text-white text-sm">&copy; 2025 AWS Nafar App. Tous droits réservés.</p>
+      </footer>
     </div>
   );
 }
