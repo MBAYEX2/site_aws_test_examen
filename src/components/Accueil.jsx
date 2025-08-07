@@ -27,7 +27,7 @@ export default function Accueil() {
 
       {/* Contenu principal */}
       <div className="relative z-10 text-center px-5 max-w-3xl mx-auto mt-32">
-        <h1 className="text-3xl md:text-5xl font-bold mb-5 leading-tight">
+        <h1 className="text-3xl md:text-4xl font-bold mb-5 leading-tight">
           Bienvenue sur A
           <span style={gradientStyle} className="mx-1">
             W
