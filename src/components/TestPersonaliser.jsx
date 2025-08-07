@@ -44,7 +44,8 @@ function TestPersonaliser() {
             className="btn-gradient w-auto px-6 py-2 rounded-lg text-white font-medium shadow-md transform transition-all duration-200 hover:scale-105"
             title="Démarrer un test de 65 questions — 90 minutes"
           >
-            ⚡ 65 QCM --> 90 min
+            ⚡ 65 Question
+             90 min
           </button>
         </div>
 
