@@ -14,13 +14,13 @@ function App() {
     <Router>
       <Routes>
         {/* route racine redirige vers /login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+       {/* <Route path="/" element={<Navigate to="/login" replace />} />*/}
 
         {/* routes principales (utilise des chemins en minuscules) */}
         
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/accueil" element={<Accueil />} />
+       {/* <Route path="/login" element={<Login />} />*/}
+        {/*<Route path="/register" element={<Register />} />*/}
+        <Route path="/" element={<Accueil />} />
         <Route path="/roles" element={<RoleSelector />} />
         <Route path="/test-personalise" element={<TestPersonaliser />} />
         <Route path="/practitionner" element={<Practitionner />} />
