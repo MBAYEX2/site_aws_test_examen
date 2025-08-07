@@ -2,7 +2,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 import { jsPDF } from "jspdf";
-import awsLogo from "./src/assets/aws.png"; // Assurez-vous que le chemin est correct
+//import awsLogo from "./src/assets/aws.png"; // Assurez-vous que le chemin est correct
 
 function Score() {
   const location = useLocation();
@@ -37,7 +37,7 @@ function Score() {
 
     // Charger le logo AWS
     const logo = new Image();
-    logo.src = awsLogo;
+ //   logo.src = awsLogo;
     logo.onload = () => {
       doc.addImage(logo, "PNG", marginLeft, y, 100, 60);
       y += 80;

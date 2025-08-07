@@ -1,7 +1,7 @@
 // src/components/Accueil.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import awsLogo from "./src/assets/aws.png";
+//import awsLogo from "./src/assets/aws.png";
 
 export default function Accueil() {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ export default function Accueil() {
     <div
       className="min-h-screen flex flex-col items-center justify-center bg-center bg-cover text-white relative"
       style={{
-        backgroundImage: `url(${awsLogo})`,
+        //backgroundImage: `url(${awsLogo})`,
       }}
     >
       {/* Overlay sombre */}
