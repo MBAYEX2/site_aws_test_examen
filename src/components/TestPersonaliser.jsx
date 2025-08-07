@@ -37,7 +37,7 @@ function TestPersonaliser() {
       <div className="w-full max-w-3xl space-y-6 relative z-10 mb-8 animate-slide-up">
         {/* Bloc Test standard AWS */}
         <div className="bg-white/20 backdrop-blur-md rounded-3xl border border-white shadow-lg p-9 flex flex-col items-center">
-          <h2 className="text-3xl font-semibold mb-9 text-neutral-900">Test standard AWS</h2>
+          <h2 className="text-3xl font-semibold mb-9 text-white">Test standard AWS</h2>
 
           <button
             onClick={start65x90}
@@ -50,14 +50,14 @@ function TestPersonaliser() {
 
         {/* Bloc Test personnalisé */}
         <div className="bg-white/20 backdrop-blur-md rounded-3xl border border-white/20 shadow-lg p-6">
-          <h1 className="text-2xl font-bold mb-4 text-center text-neutral-900">
+          <h1 className="text-2xl font-bold mb-4 text-center text-white">
             📚 Test AWS personnalisé
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-6 mb-6 justify-center">
             {/* Nombre de questions */}
             <div className="flex flex-col">
-              <label className="mb-2 font-medium text-neutral-900">Nombre de questions</label>
+              <label className="mb-2 font-medium text-white">Nombre de questions</label>
               <select
                 value={selectedCount}
                 onChange={(e) => setSelectedCount(parseInt(e.target.value))}
@@ -74,7 +74,7 @@ function TestPersonaliser() {
 
             {/* Durée */}
             <div className="flex flex-col">
-              <label className="mb-2 font-medium text-neutral-900">Durée du test (minutes)</label>
+              <label className="mb-2 font-medium text-white">Durée du test (minutes)</label>
               <select
                 value={selectedDuration}
                 onChange={(e) => setSelectedDuration(parseInt(e.target.value))}
