@@ -1,8 +1,6 @@
-// src/components/Score.jsx
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 import { jsPDF } from "jspdf";
-//import awsLogo from "./src/assets/aws.png"; // Assurez-vous que le chemin est correct
 
 function Score() {
   const location = useLocation();
@@ -29,68 +27,60 @@ function Score() {
   const canViewAnswers =
     Array.isArray(questions) && questions.length > 0 && !allCorrect;
 
-  // ✅ Générer un rapport PDF avec logo AWS
+  // Générer un rapport PDF sans logo image
   const downloadPdfReport = () => {
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const marginLeft = 40;
     let y = 60;
 
-    // Charger le logo AWS
-    const logo = new Image();
- //   logo.src = awsLogo;
-    logo.onload = () => {
-      doc.addImage(logo, "PNG", marginLeft, y, 100, 60);
-      y += 80;
+    // Suppression de l’image logo
 
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(20);
-      doc.text("Rapport de Résultat - Nafar App", marginLeft, y);
-      y += 30;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text("Rapport de Résultat - Nafar App", marginLeft, y);
+    y += 30;
 
-      const now = new Date();
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      doc.text(`Date du test : ${now.toLocaleString()}`, marginLeft, y);
+    const now = new Date();
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text(`Date du test : ${now.toLocaleString()}`, marginLeft, y);
+    y += 20;
+    doc.text(`Score : ${score} / ${total}`, marginLeft, y);
+    y += 20;
+    doc.text(`Pourcentage : ${percentage}%`, marginLeft, y);
+    y += 20;
+
+    if (timeUp) {
+      doc.setTextColor(200, 0, 0);
+      doc.text("⏳ Temps épuisé pendant le test", marginLeft, y);
+      doc.setTextColor(0, 0, 0);
       y += 20;
-      doc.text(`Score : ${score} / ${total}`, marginLeft, y);
-      y += 20;
-      doc.text(`Pourcentage : ${percentage}%`, marginLeft, y);
-      y += 20;
+    }
 
-      if (timeUp) {
-        doc.setTextColor(200, 0, 0);
-        doc.text("⏳ Temps épuisé pendant le test", marginLeft, y);
-        doc.setTextColor(0, 0, 0);
-        y += 20;
-      }
+    doc.setDrawColor(180, 180, 180);
+    doc.line(marginLeft, y, doc.internal.pageSize.getWidth() - marginLeft, y);
+    y += 20;
 
-      doc.setDrawColor(180, 180, 180);
-      doc.line(marginLeft, y, doc.internal.pageSize.getWidth() - marginLeft, y);
-      y += 20;
+    doc.setFontSize(10);
+    doc.setTextColor(120, 120, 120);
+    doc.text(
+      "Généré automatiquement par AWS Nafar App",
+      marginLeft,
+      doc.internal.pageSize.getHeight() - 30
+    );
 
-      doc.setFontSize(10);
-      doc.setTextColor(120, 120, 120);
-      doc.text(
-        "Généré automatiquement par AWS Nafar App",
-        marginLeft,
-        doc.internal.pageSize.getHeight() - 30
-      );
-
-      doc.save(
-        `rapport_test_${now
-          .toISOString()
-          .slice(0, 19)
-          .replace(/[:T]/g, "-")}.pdf`
-      );
-    };
+    doc.save(
+      `rapport_test_${now
+        .toISOString()
+        .slice(0, 19)
+        .replace(/[:T]/g, "-")}.pdf`
+    );
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       {timeUp && (
-        <p className="text-red-600 text-2xl mb-4 animate-pulse">
-          ⏳ Temps épuisé !
-        </p>
+        <p className="text-red-600 text-2xl mb-4 animate-pulse">⏳ Temps épuisé !</p>
       )}
 
       <h1 className="text-3xl font-bold mb-4">🎯 Résultat du Test</h1>

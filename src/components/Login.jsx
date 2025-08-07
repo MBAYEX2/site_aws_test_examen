@@ -1,8 +1,6 @@
-// src/components/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios"; // assure-toi que le chemin est correct
-//import awsLogo from "./src/assets/aws.png";
+import api from "../api/axios"; // chemin ok
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,14 +15,12 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await api.post("/auth/login", { email, password });
-      // Attendu : { token, _id, email } ou similaire
       const token = res.data?.token || res.data?.accessToken;
       if (!token) throw new Error(res.data?.message || "Aucun token reçu");
 
       localStorage.setItem("authToken", token);
       if (res.data.email) localStorage.setItem("userEmail", res.data.email);
 
-      // redirection vers la page protégée
       navigate("/accueil");
     } catch (err) {
       console.error(err);
@@ -36,6 +32,7 @@ export default function Login() {
   };
 
   return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white/90 backdrop-blur-lg p-8 rounded-xl shadow-lg w-96 mt-16 ml-4">
         <h2 className="text-2xl font-bold mb-4 text-center">Connexion</h2>
 
@@ -45,10 +42,11 @@ export default function Login() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" aria-busy={loading}>
           <div>
-            <label className="block mb-1 font-medium">Email</label>
+            <label className="block mb-1 font-medium" htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -59,8 +57,9 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Baatu Jall</label>
+            <label className="block mb-1 font-medium" htmlFor="password">Mot de passe</label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

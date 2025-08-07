@@ -1,18 +1,12 @@
 // src/components/Accueil.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-//import awsLogo from "./src/assets/aws.png";
 
 export default function Accueil() {
   const navigate = useNavigate();
 
   const goToRoleSelector = () => {
-    // On essaye d'abord la route normalisée en minuscules (/roles)
-    // puis on tente la route avec casse originale si l'autre ne marche pas.
-    // (Tu peux garder uniquement la première si tu as déjà corrigé App.jsx)
     navigate("/roles", { replace: false });
-    // si tu veux forcer la route ancienne, décommente la ligne suivante :
-    // navigate("/RoleSelector", { replace: false });
   };
 
   const gradientStyle = {
@@ -25,9 +19,7 @@ export default function Accueil() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center bg-center bg-cover text-white relative"
-      style={{
-        //backgroundImage: `url(${awsLogo})`,
-      }}
+      style={{}}
     >
       {/* Overlay sombre */}
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" />

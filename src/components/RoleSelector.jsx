@@ -1,10 +1,6 @@
-// src/components/RoleSelector.jsx
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import pract2 from "../assets/pract2.webp";
-import ac1 from "../assets/ac1.webp";
-//import awsLogo from "./src/assets/aws.png";
 
 export default function RoleSelector() {
   const navigate = useNavigate();
@@ -74,11 +70,8 @@ export default function RoleSelector() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-end justify-center bg-center bg-cover relative"
-      style={{ backgroundImage: `url(${awsOrange})` }}
-    >
-      <div className="absolute inset-0 bg-black/50 -z-10" />
+    <div className="min-h-screen flex items-end justify-center bg-gray-100 relative">
+      {/* Suppression de l’image de fond */}
 
       <div className="relative z-10 w-full max-w-2xl px-6 py-10">
         <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-lg p-6 flex flex-col items-center">
@@ -104,12 +97,10 @@ export default function RoleSelector() {
               className="flex-1 max-w-xs bg-white rounded-xl shadow-md p-4 flex flex-col items-center border"
               variants={cardLeftVariant}
             >
-              <img
-                src={pract2}
-                alt="Practitionner"
-                className="mt-2 w-40 h-28 object-cover rounded-md shadow-sm"
-                loading="lazy"
-              />
+              {/* Ici, pas d'image */}
+              <div className="mt-2 w-40 h-28 flex items-center justify-center bg-gray-200 rounded-md shadow-sm text-gray-500">
+                Practitionner
+              </div>
               <button
                 onClick={goToPractitionner}
                 className="mt-4 w-full px-6 py-3 rounded-lg bg-orange-500 text-black font-medium transform transition duration-200 hover:scale-[1.03] hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-orange-200"
@@ -124,12 +115,10 @@ export default function RoleSelector() {
               className="flex-1 max-w-xs bg-white rounded-xl shadow-md p-4 flex flex-col items-center border"
               variants={cardRightVariant}
             >
-              <img
-                src={ac1}
-                alt="Associate"
-                className="mt-2 w-40 h-28 object-cover rounded-md shadow-sm"
-                loading="lazy"
-              />
+              {/* Pas d'image */}
+              <div className="mt-2 w-40 h-28 flex items-center justify-center bg-gray-200 rounded-md shadow-sm text-gray-500">
+                Associate
+              </div>
               <button
                 onClick={openAssociateModal}
                 className="mt-4 w-full px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-medium transform transition duration-200 hover:scale-[1.03] hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-gray-200"
