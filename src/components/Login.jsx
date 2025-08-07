@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios"; // assure-toi que le chemin est correct
-import awsLogo from "./src/assets/aws.png";
+//import awsLogo from "./src/assets/aws.png";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -36,10 +36,6 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: `url(${awsLogo})` }}
-    >
       <div className="bg-white/90 backdrop-blur-lg p-8 rounded-xl shadow-lg w-96 mt-16 ml-4">
         <h2 className="text-2xl font-bold mb-4 text-center">Connexion</h2>
 
