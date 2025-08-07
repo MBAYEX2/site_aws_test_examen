@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import pract2 from "../assets/pract2.webp";
 import ac1 from "../assets/ac1.webp";
-import awsOrange from "../assets/aws_orange.PNG";
+import awsOrange from "../assets/aws_orange.png";
 
 export default function RoleSelector() {
   const navigate = useNavigate();
