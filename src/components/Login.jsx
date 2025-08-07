@@ -63,7 +63,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Mot de passe</label>
+            <label className="block mb-1 font-medium">Baatu Jall</label>
             <input
               type="password"
               value={password}
@@ -82,13 +82,6 @@ export default function Login() {
             {loading ? "Connexion..." : "Se connecter"}
           </button>
         </form>
-
-        <div className="mt-4 text-center text-sm">
-          <a href="/forgot-password" className="text-blue-500 hover:underline">
-            Mot de passe oublié ?
-          </a>
-        </div>
-
         <p className="mt-4 text-center text-sm">
           Pas encore de compte ?{" "}
           <a href="/register" className="text-blue-500 hover:underline">

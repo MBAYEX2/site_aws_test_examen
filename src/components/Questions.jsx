@@ -19,17 +19,17 @@ function Questions({ questions }) {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <h2 className="text-2xl font-bold mb-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <h2 className="text-2xl font-bold mb-4">
         Question {currentIndex + 1} / {questions.length}
       </h2>
 
       <div className="w-full max-w-xl bg-white shadow p-4 rounded-lg">
-        <p className="mb-4 font-semibold">{currentQuestion.question}</p>
+        <p className="mb-5 font-semibold">{currentQuestion.question}</p>
 
-        <ul className="space-y-2 mb-4">
+        <ul className="space-y-3 mb-2">
           {currentQuestion.options.map((option, i) => (
-            <li key={i} className="p-2 border rounded">
+            <li key={i} className="p-1 border rounded">
               {option}
             </li>
           ))}

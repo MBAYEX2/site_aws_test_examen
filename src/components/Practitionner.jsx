@@ -241,12 +241,10 @@ export default function Practitionner() {
       
 
       {/* Question principale */}
-      <div className="w-full h-[calc(100vh-100px)] flex items-center justify-center mt-4">
-  <div className="w-full h-full max-w-7xl bg-white p-6 rounded-lg shadow overflow-y-auto">
+      <div className="w-full h-[calc(100vh-100px)] flex items-center justify-center mt-4 ">
+  <div className="w-full h-full max-w-8xl bg-white p-0 rounded-lg shadow overflow-y-auto">
           {/* Timer + Flag */}
           <div className="absolute top-0 right-0 flex items-center gap-3">
-            
-
             <button
               onClick={toggleFlag}
               className="p-1 rounded hover:bg-gray-100"
