@@ -1,7 +1,7 @@
 function QuestionGrid({ questions, selectedAnswers, flaggedQuestions, onSelectQuestion }) {
   return (
     <div
-      className="absolute top-0 right-4 p-0 border rounded bg-white shadow"
+      className="absolute top-2 right-8 p-0 border rounded bg-white shadow"
       style={{ display: "grid", gridTemplateColumns: "repeat(22, 18px)", gap: "3px" }}
     >
       {questions.map((_, index) => {

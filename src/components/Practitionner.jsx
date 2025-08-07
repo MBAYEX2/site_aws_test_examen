@@ -202,12 +202,23 @@ export default function Practitionner() {
   const isMultiCurrent = (q.correctAnswers?.length || 0) > 1;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 border-amber-50">
+    <div className="min-h-screen bg-gray-100 p-6 border-amber-45s">
+      {/* Barre de progression horizontale du temps */}
+<div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden relative mb-4">
+  <div
+    className="h-full bg-orange-500 transition-all duration-500 ease-linear"
+    style={{ width: `${progressRatio * 100}%` }}
+  ></div>
+  <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-700">
+    {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+  </div>
+</div>
+
       {/* Grille en haut */}
-      <div className="max-w-3xl mx-auto mb-0 p-3 bg-white rounded shadow">
+      <div className="max-w-2xl mx-auto mb-0 p-3 bg-white rounded shadow">
         <div
           className="grid gap-0 justify-center"
-          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(23px, 1fr))" }}
+          style={{ gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}
         >
           {questions.map((_, index) => {
             const answered = (selectedAnswers[index] || []).length > 0;
@@ -227,56 +238,26 @@ export default function Practitionner() {
           })}
         </div>
       </div>
+      
 
       {/* Question principale */}
-      <div className="max-w-3xl mx-auto">
-        <div className="relative bg-white p-4 rounded-lg shadow">
+      <div className="w-full h-[calc(100vh-100px)] flex items-center justify-center mt-4">
+  <div className="w-full h-full max-w-7xl bg-white p-6 rounded-lg shadow overflow-y-auto">
           {/* Timer + Flag */}
-          <div className="absolute top-0 right-3 flex items-center gap-3">
-            <svg width="60" height="60" viewBox="0 0 60 60">
-              <circle
-                cx="30"
-                cy="30"
-                r={radius}
-                stroke="#eee"
-                strokeWidth="5"
-                fill="none"
-              />
-              <circle
-                cx="30"
-                cy="30"
-                r={radius}
-                stroke="#f97316"
-                strokeWidth="5"
-                fill="none"
-                strokeDasharray={circumference}
-                strokeDashoffset={Math.max(0, circumference - progress)}
-                strokeLinecap="round"
-                transform={`rotate(-90 30 30)`}
-              />
-              <text
-                x="50%"
-                y="50%"
-                dominantBaseline="middle"
-                textAnchor="middle"
-                fontSize="10"
-                fill="#111"
-              >
-                {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-              </text>
-            </svg>
+          <div className="absolute top-0 right-0 flex items-center gap-3">
+            
 
             <button
               onClick={toggleFlag}
-              className="p-2 rounded hover:bg-gray-100"
+              className="p-1 rounded hover:bg-gray-100"
               aria-pressed={!!flaggedQuestions[currentIndex]}
             >
               🚩
             </button>
           </div>
 
-          <h2 className="text-xl font-bold mb-3">
-            Question {currentIndex + 1}
+          <h2 className="text-xl font-bold mb-3 text-amber-400">
+            Question {currentIndex + 1} / {questions.length}
           </h2>
 
           <p className="text-lg font-medium mb-4">
@@ -353,26 +334,6 @@ export default function Practitionner() {
               )}
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  if (finishedRef.current) return navigate(-1);
-                  const confirmLeave = window.confirm(
-                    "Voulez-vous quitter le test ? Vos réponses ne seront pas sauvegardées."
-                  );
-                  if (confirmLeave) {
-                    finishedRef.current = true;
-                    navigate(-1);
-                  }
-                }}
-                className="text-sm text-gray-600 underline"
-              >
-                Annuler
-              </button>
-              <span className="text-sm text-gray-500">
-                Questions : {questions.length}
-              </span>
-            </div>
           </div>
         </div>
       </div>
