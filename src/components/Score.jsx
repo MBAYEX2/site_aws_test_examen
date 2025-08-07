@@ -2,7 +2,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 import { jsPDF } from "jspdf";
-import awsLogo from "../assets/aws_orange.png"; // Assurez-vous que le chemin est correct
+import awsLogo from "./src/assets/aws_orange.png"; // Assurez-vous que le chemin est correct
 
 function Score() {
   const location = useLocation();
