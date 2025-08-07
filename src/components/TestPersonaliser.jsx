@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import questionsData from "../awsquestion.js";
-//import awsBg from "./src/assets/aws_orange.png";
+import awsBg from "./src/assets/aws.png";
 
 function TestPersonaliser() {
   const navigate = useNavigate();

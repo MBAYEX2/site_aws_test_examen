@@ -1,7 +1,7 @@
 // src/components/Accueil.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-//import awsLogo from "./src/assets/aws_orange.png";
+import awsLogo from "./src/assets/aws.png";
 
 export default function Accueil() {
   const navigate = useNavigate();
