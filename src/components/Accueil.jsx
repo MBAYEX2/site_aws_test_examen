@@ -1,6 +1,6 @@
-// src/components/Accueil.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import awsOrange from "../assets/aws_orange.png";  // Import de l'image
 
 export default function Accueil() {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function Accueil() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center bg-center bg-cover text-white relative"
-      style={{}}
+      style={{ backgroundImage: `url(${awsOrange})` }}  // Image en fond
     >
       {/* Overlay sombre */}
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
