@@ -2,6 +2,7 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import awsBackground from "../assets/aws_orange.png"; // ✅ Import du fond d'écran
 
 export default function Register() {
   const navigate = useNavigate();
@@ -31,8 +32,11 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-96">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: `url(${awsBackground})` }} // ✅ Fond d'écran ici
+    >
+      <div className="bg-white bg-opacity-90 p-8 rounded-xl shadow-lg w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Créer un compte</h2>
 
         {error && (

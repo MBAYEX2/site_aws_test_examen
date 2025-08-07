@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import questionsData from "../awsquestion.js";
+import awsBackground from "../assets/aws_orange.png"; // ✅ Import de l'image
 
 function TestPersonaliser() {
   const navigate = useNavigate();
@@ -25,13 +26,16 @@ function TestPersonaliser() {
   const start65x90 = () => handleStart({ count: 65, duration: 90 });
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-end bg-gray-100 px-6 py-6 relative">
+    <div
+      className="min-h-screen flex flex-col items-center justify-end px-6 py-6 relative bg-cover bg-center"
+      style={{ backgroundImage: `url(${awsBackground})` }} // ✅ Fond d’écran ici
+    >
       {/* Overlay sombre */}
-      <div className="absolute inset-0 bg-black/40" aria-hidden="true"></div>
+      <div className="absolute inset-0 bg-black/40 z-0" aria-hidden="true"></div>
 
       {/* Conteneur central */}
       <div className="w-full max-w-3xl space-y-6 relative z-10 mb-8 animate-slide-up">
-        {/* Bloc Test standard AWS (glass) */}
+        {/* Bloc Test standard AWS */}
         <div className="bg-white/20 backdrop-blur-md rounded-3xl border border-white shadow-lg p-9 flex flex-col items-center">
           <h2 className="text-3xl font-semibold mb-9 text-neutral-900">Test standard AWS</h2>
 
@@ -40,18 +44,18 @@ function TestPersonaliser() {
             className="btn-gradient w-auto px-6 py-2 rounded-lg text-white font-medium shadow-md transform transition-all duration-200 hover:scale-105"
             title="Démarrer un test de 65 questions — 90 minutes"
           >
-            ⚡ 65 Question 90 min
+            ⚡ 65 Questions – 90 min
           </button>
         </div>
 
-        {/* Bloc Test personnalisé (glass) */}
+        {/* Bloc Test personnalisé */}
         <div className="bg-white/20 backdrop-blur-md rounded-3xl border border-white/20 shadow-lg p-6">
           <h1 className="text-2xl font-bold mb-4 text-center text-neutral-900">
             📚 Test AWS personnalisé
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-6 mb-6 justify-center">
-            {/* Sélection nombre de questions */}
+            {/* Nombre de questions */}
             <div className="flex flex-col">
               <label className="mb-2 font-medium text-neutral-900">Nombre de questions</label>
               <select
@@ -68,7 +72,7 @@ function TestPersonaliser() {
               </select>
             </div>
 
-            {/* Sélection durée */}
+            {/* Durée */}
             <div className="flex flex-col">
               <label className="mb-2 font-medium text-neutral-900">Durée du test (minutes)</label>
               <select
